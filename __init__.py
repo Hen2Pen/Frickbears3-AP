@@ -18,14 +18,15 @@ from typing import Dict
 
 from .Locations import get_location_names, get_total_locations
 from .Items import create_item, create_itempool, item_table
-from .Options import APSkeletonOptions
+from .Options import Frickbears3Options
 from .Regions import create_regions
 from .Types import ChapterType, chapter_type_to_name
+from .Rules import set_rules
 
 # This is where you setup the page on the site!
 # Typically is the name of your game with web
 # Whatever you named the folder you are holding all of this in
-class APSkeletonWeb(WebWorld):
+class Frickbears3Web(WebWorld):
     # Theres a few different themes so have fun with it
     theme = "Party"
     
@@ -37,28 +38,28 @@ class APSkeletonWeb(WebWorld):
         "English",
         "setup_en.md",
         "setup/en",
-        ["Nep (but you would put your name!)"]
+        ["HenToPen"]
     )]
 
 # This class is the real meat and potatoes
 # Same as the first class its normally named whatever you named your folder with World at the end
-class APSkeletonWorld(World):
+class Frickbears3World(World):
     """
     This is where you describe your game. Pretend you are marketing the game and that people have no clue what it is.
     Or make it silly. Whatever you wish I have no control over you.
     """
 
     # You want to put the full name of the game here. If you shortened the name for the folder and class names, dont do that here
-    game = "APSkeleton"
+    game = "Five Nights at Frickbear's 3"
     # The item_table will be setup in  your Items.py. This line gets all the items you put into item_table and puts it in a way that AP can understand it
     item_name_to_id = {name: data.ap_code for name, data in item_table.items()}
     # get_location_names() will come from your Locations.py
     location_name_to_id = get_location_names()
     # And these 2 are the name of your Options.py class. 
-    options_dataclass = APSkeletonOptions
-    options = APSkeletonOptions
+    options_dataclass = Frickbears3Options
+    options = Frickbears3Options
     # The name of the class above
-    web = APSkeletonWeb()
+    web = Frickbears3Web()
     # print("🐀🐀🐀🐀🐀🐀🐀🐀🐀🐀🐀🐀🐀🐀")
 
     # There are other built in variables for AP. You can look at other worlds to see your options
@@ -74,19 +75,20 @@ class APSkeletonWorld(World):
     def generate_early(self):
         # I highly recommend looking at other apworlds init files to see some examples
         # sly1 (hey i did that), ahit, and bomb rush cyberfunk are some good ones
-        starting_chapter = chapter_type_to_name[ChapterType(self.options.StartingChapter)]
+        #starting_chapter = chapter_type_to_name[ChapterType(self.options.StartingChapter)]
 
         # Push precollected is how you give your player items they need to start with
         # This is for options though. Dont worry about the starting inventory option thats in all yamls
         # AP handles that one
-        self.multiworld.push_precollected(self.create_item(starting_chapter))
+        #self.multiworld.push_precollected(self.create_item(starting_chapter))
+        pass
 
     # Regions are the different locations in your world. So like Undead Burgh in dark souls or Pacifilog Town in pokemon
     # They dont have to match your game, they can be whatever you need them to be for organization
     def create_regions(self):
         # This function comes from your Regions.py and dont worry that it matches the function that its in
         create_regions(self)
-
+        set_rules(self)
         # You can also use this space to do other location creation activities
         # Like if an option is enabled to add extra locations
         # Or the opposite, whatever it is. Just be careful that you arent duplicating locations
@@ -108,11 +110,9 @@ class APSkeletonWorld(World):
     def fill_slot_data(self) -> Dict[str, object]:
         slot_data: Dict[str, object] = {
             "options": {
-                "StartingPlace":            self.options.StartingChapter.value,
-                "ExtraLocations":           self.options.ExtraLocations.value,
-                "TrapChance":               self.options.TrapChance.value,
-                "ForcefemTrapWeight":       self.options.ForcefemTrapWeight.value,
-                "SpeedChangeTrapWeight":    self.options.SpeedChangeTrapWeight.value
+                "GoalEnding":           self.options.GoalEnding.value,
+                "Difficulty":           self.options.Difficulty.value,
+                "RandomiseSalvages":    self.options.RandomiseSalvages.value
             },
             "Seed": self.multiworld.seed_name,  # to verify the server's multiworld
             "Slot": self.multiworld.player_name[self.player],  # to connect to server

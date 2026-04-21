@@ -7,72 +7,58 @@ from Options import Choice, OptionGroup, Toggle, Range
 # This is that
 def create_option_groups() -> List[OptionGroup]:
     option_group_list: List[OptionGroup] = []
-    for name, options in ap_skeleton_option_groups.items():
+    for name, options in frickbears3_option_groups.items():
         option_group_list.append(OptionGroup(name=name, options=options))
 
     return option_group_list
 
-class StartingChapter(Choice):
+class GoalEnding(Choice):
     """
-    Determines which chapter you'll start with.
-    When you grab choice you'll get the associated number.
-    IE: If the player chooses the sewer then when you go to call StartingChapter you'll get 3
-    When displaying the options names on the site, _ will become spaces and the word option will go away.
+    Determines which ending you need to complete to complete the game.
+
+    Slacker requires making it to the end of night 5 without meeting any other ending criteria
+    Good requires collecting all 4 masks in each of the four main salvage locations, you need to receive 4/5 gift boxes for this
+    Evil requires salvaging all 4 scrap animatronics in each of the four main salvage locations, you need to receive each of the four as well as a Hatchet and the P&S Key
+    Money requires receiving Talbert's Files and completing one more salvage and night at a bonus location
+    Ultimate requires all 4 masks, all 4 scrap animatronics, Talbert's Files and a final chat with your old friend
+
+    As a temporary note, Slacker Ending currently causes issues as Talbert's Files will prevent you from completing it, and I haven't been bothered to fully remove all Salvage5 locations/items if Slacker is selected
     """
-    display_name = "Starting Chapter"
-    option_green_hill_zone = 1
-    option_romania = 2
-    option_the_sewer = 3
+    display_name = "Goal Ending"
+    option_slacker_ending = 1
+    option_good_ending = 2
+    option_evil_ending = 3
+    option_money_ending = 4
+    option_ultimate_ending = 5
     default = 1
 
-class ExtraLocations(Toggle):
+class Difficulty(Choice):
     """
-    This will enable the extra locations option. Toggle is just true or false.
-    """
-    display_name = "Add Extra Locations"
+    Determines which difficulty the game is set to.
 
-class TrapChance(Range):
+    This affects how many salvages you are required to make at each location, as well as AI Levels for animatronics and bosses
     """
-    Determines the chance for any junk item to become a trap.
-    Set it to 0 for no traps.
-    Range is in fact a range. You can set the limits and its default.
-    """
-    display_name = "Trap Chance"
-    range_start = 0
-    range_end = 100
-    default = 0
+    display_name = "Difficulty"
+    option_easy = 1
+    option_normal = 2
+    option_hard = 3
+    option_lunatic = 4
+    default = 2
 
-class ForcefemTrapWeight(Range):
+class RandomiseSalvages(Toggle):
     """
-    The weight of forcefem traps in the trap pool.
-    Does really cool stuff to your body.
+    This randomises which animatronics can be salvaged where. This currently does nothing and isn't implemented
     """
-    display_name = "Forcefem Trap Weight"
-    range_start = 0
-    range_end = 100
-    default = 100
-
-class SpeedChangeTrapWeight(Range):
-    """
-    The weight of speed change traps in the trap pool.
-    Speed change traps change the game speed for x seconds.
-    """
-    display_name = "Speed Change Trap Weight"
-    range_start = 0
-    range_end = 100
-    default = 25
+    display_name = "Randomise Salvages"
 
 @dataclass
-class APSkeletonOptions(PerGameCommonOptions):
-    StartingChapter:            StartingChapter
-    ExtraLocations:             ExtraLocations
-    TrapChance:                 TrapChance
-    ForcefemTrapWeight:         ForcefemTrapWeight
-    SpeedChangeTrapWeight:      SpeedChangeTrapWeight
+class Frickbears3Options(PerGameCommonOptions):
+    GoalEnding:             GoalEnding
+    Difficulty:             Difficulty
+    RandomiseSalvages:      RandomiseSalvages
 
 # This is where you organize your options
 # Its entirely up to you how you want to organize it
-ap_skeleton_option_groups: Dict[str, List[Any]] = {
-    "General Options": [StartingChapter, ExtraLocations],
-    "Trap Options": [TrapChance, ForcefemTrapWeight, SpeedChangeTrapWeight]
+frickbears3_option_groups: Dict[str, List[Any]] = {
+    "General Options": [GoalEnding, Difficulty, RandomiseSalvages]
 }
