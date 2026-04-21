@@ -1,0 +1,194 @@
+from __future__ import annotations
+import os
+import sys
+import asyncio
+import shutil
+
+import ModuleUpdate
+ModuleUpdate.update()
+
+import Utils
+
+if __name__ == "__main__":
+    Utils.init_logging("Frickbears3Client", exception_logger="Client")
+
+from NetUtils import NetworkItem, ClientStatus
+from CommonClient import gui_enabled, logger, get_base_parser, ClientCommandProcessor, \
+    CommonContext, server_loop
+
+def salvageID_to_locID(salvageID: int) -> int:
+    salArray = [0,0,0,0,19875005,19875006,19875008,19875009,19875010,19875011,19875001,19875002,19875003,19875004,0,19875012,0,19875017,19875013,19875015,19875007,19875022,19875023,19875024,19875025,19875033,19875029,19875030,19875031,19875032,19875016,19875019,19875018,19875014,19875028,19875021,19875027,19875020,19875026,19875034,19875035,19875036,19875037,19875038,19875039,19875040,19875041]
+    return salArray[salvageID]
+
+def shopID_to_locID(shopID: int) -> int:
+    base = 19875000
+    return (base+shopID)
+
+
+class Frickbears3ClientCommandProcessor(ClientCommandProcessor):
+    def _cmd_resync(self):
+        """Manually trigger a resync."""
+        self.output(f"Syncing items.")
+        self.ctx.syncing = True
+
+
+class Frickbears3Context(CommonContext):
+    command_processor: int = Frickbears3ClientCommandProcessor
+    game = "Five Nights at Frickbear's 3"
+    items_handling = 0b111  # full remote
+
+    def __init__(self, server_address, password):
+        super(Frickbears3Context, self).__init__(server_address, password)
+        self.send_index: int = 0
+        self.syncing = False
+        self.awaiting_bridge = False
+        # self.game_communication_path: files go in this path to pass data between us and the actual game
+        if "localappdata" in os.environ:
+            self.game_communication_path = os.path.expandvars(r"%localappdata%/Frickbears3/savedata2-13-25.wario")
+        else:
+            # not windows. game is an exe so let's see if wine might be around to run it
+            if "WINEPREFIX" in os.environ:
+                wineprefix = os.environ["WINEPREFIX"]
+            elif shutil.which("wine") or shutil.which("wine-stable"):
+                wineprefix = os.path.expanduser("~/.wine") # default root of wine system data, deep in which is app data
+            else:
+                msg = "Frickbears3Client couldn't detect system type. Unable to infer required game_communication_path"
+                logger.error("Error: " + msg)
+                Utils.messagebox("Error", msg, error=True)
+                sys.exit(1)
+            self.game_communication_path = os.path.join(
+                wineprefix,
+                "drive_c",
+                os.path.expandvars("users/$USER/Local Settings/Application Data/ChecksFinder"))
+
+    async def server_auth(self, password_requested: bool = False):
+        if password_requested and not self.password:
+            await super(Frickbears3Context, self).server_auth(password_requested)
+        await self.get_username()
+        await self.send_connect()
+
+    async def connection_closed(self):
+        await super(Frickbears3Context, self).connection_closed()
+        for root, dirs, files in os.walk(self.game_communication_path):
+            for file in files:
+                if file.find("obtain") <= -1:
+                    os.remove(root + "/" + file)
+
+    @property
+    def endpoints(self):
+        if self.server:
+            return [self.server]
+        else:
+            return []
+
+    async def shutdown(self):
+        await super(Frickbears3Context, self).shutdown()
+        for root, dirs, files in os.walk(self.game_communication_path):
+            for file in files:
+                if file.find("obtain") <= -1:
+                    os.remove(root+"/"+file)
+
+    def on_package(self, cmd: str, args: dict):
+        if cmd in {"Connected"}:
+            if not os.path.exists(self.game_communication_path):
+                os.makedirs(self.game_communication_path)
+            #for ss in self.checked_locations:
+            #    filename = f"send{ss}"
+            #    with open(os.path.join(self.game_communication_path, filename), 'w') as f:
+            #        f.close()
+        #if cmd in {"ReceivedItems"}:
+        #    start_index = args["index"]
+        #    if start_index != len(self.items_received):
+        #        for item in args['items']:
+        #            filename = f"AP_{str(NetworkItem(*item).location)}PLR{str(NetworkItem(*item).player)}.item"
+        #            with open(os.path.join(self.game_communication_path, filename), 'w') as f:
+        #                f.write(str(NetworkItem(*item).item))
+        #                f.close()
+
+       # if cmd in {"RoomUpdate"}:
+          #  if "checked_locations" in args:
+           #     for ss in self.checked_locations:
+             #       filename = f"send{ss}"
+              #      with open(os.path.join(self.game_communication_path, filename), 'w') as f:
+              #          f.close()
+
+    def run_gui(self):
+        """Import kivy UI system and start running it as self.ui_task."""
+        from kvui import GameManager
+
+        class Frickbears3Manager(GameManager):
+            logging_pairs = [
+                ("Client", "Archipelago")
+            ]
+            base_title = "Archipelago Frickbears3 Client"
+
+        self.ui = Frickbears3Manager(self)
+        self.ui_task = asyncio.create_task(self.ui.async_run(), name="UI")
+
+
+async def game_watcher(ctx: Frickbears3Context):
+    while not ctx.exit_event.is_set():
+        if ctx.syncing == True:
+            sync_msg = [{'cmd': 'Sync'}]
+            if ctx.locations_checked:
+                sync_msg.append({"cmd": "LocationChecks", "locations": list(ctx.locations_checked)})
+            await ctx.send_msgs(sync_msg)
+            ctx.syncing = False
+        sending = []
+        victory = False
+        file1 = open(r"C:\Users\darea\AppData\Local\Frickbears3/savedata2-13-25.wario")
+        file = file1.read()
+        file1.close()
+        if file.find('_Salvages":') > -1:
+           pt1 = file.partition('_Salvages":[')
+           pt2 = pt1[2].partition('],"_Masks"')
+           salvaged = pt2[0].split(",")
+           for x in salvaged:
+               if salvageID_to_locID(int(float(x))) != 0:
+                  sending.append(salvageID_to_locID(int(float(x))))
+        if file.find('_Upgrades":') > -1:
+            pt1 = file.partition('_Upgrades":[')
+            pt2 = pt1[2].partition('],"_Deaths"')
+            bought = pt2[0].split(",")
+            for x in bought:
+                if x == '':
+                    continue
+                if int(float(x)) >= 42 and int(float(x)) <= 83:
+                    sending.append(shopID_to_locID(int(float(x))))
+        ctx.locations_checked = sending
+        message = [{"cmd": 'LocationChecks', "locations": sending}]
+        await ctx.send_msgs(message)
+        if not ctx.finished_game and victory:
+            await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
+            ctx.finished_game = True
+        await asyncio.sleep(0.1)
+
+
+def main():
+    async def _main(args):
+        ctx = Frickbears3Context(args.connect, args.password)
+        ctx.server_task = asyncio.create_task(server_loop(ctx), name="server loop")
+        if gui_enabled:
+            ctx.run_gui()
+        ctx.run_cli()
+        progression_watcher = asyncio.create_task(
+            game_watcher(ctx), name="Frickbears3ProgressionWatcher")
+
+        await ctx.exit_event.wait()
+        ctx.server_address = None
+
+        await progression_watcher
+
+        await ctx.shutdown()
+
+    import colorama
+
+    parser = get_base_parser(description="Frickbears3 Client, for text interfacing.")
+
+    args, rest = parser.parse_known_args()
+    colorama.init()
+    asyncio.run(_main(args))
+    colorama.deinit()
+
+if __name__ == "__main__":
+    main()

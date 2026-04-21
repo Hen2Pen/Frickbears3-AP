@@ -14,6 +14,8 @@ import logging
 
 from BaseClasses import MultiWorld, Item, Tutorial
 from worlds.AutoWorld import World, CollectionState, WebWorld
+from worlds.LauncherComponents import Component, components
+from multiprocessing import Process
 from typing import Dict
 
 from .Locations import get_location_names, get_total_locations
@@ -22,6 +24,14 @@ from .Options import Frickbears3Options
 from .Regions import create_regions
 from .Types import ChapterType, chapter_type_to_name
 from .Rules import set_rules
+
+def run_client():
+    print('Running Frickbears3 Client')
+    from .Frickbears3Client import main  # lazy import
+    p = Process(target=main)
+    p.start()
+
+components.append(Component("Frickbears3 Client", func=run_client))
 
 # This is where you setup the page on the site!
 # Typically is the name of your game with web
