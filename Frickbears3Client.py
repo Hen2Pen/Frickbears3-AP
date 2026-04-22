@@ -24,12 +24,76 @@ def shopID_to_locID(shopID: int) -> int:
     base = 19875000
     return (base+shopID)
 
+def itemIDCount_to_upgradeID(itemID: int, count: int) -> float:
+    Overcharge = [0,0.0,1.0,2.0]
+    MiniMultipler = [0,3.0,4.0,5.0]
+    EmployDiscount = [0,6.0,7.0]
+    BackdoorTrade = [0,8.0,9.0,10.0]
+    CamRadar = [0,11.0,12.0]
+    Superfan = [0,13.0,14.0]
+    Headstart = [0,15.0,16.0,17.0]
+    Overstock = [0,18.0,19.0]
+    Investment = [0,20.0,21.0,22.0,23.0]
+    Loan = [0,24.0,25.0,26.0]
+    MangleCart = [0,27.0]
+    CupcakeCart = [0,28.0]
+    AnimdudeCart = [0,29.0]
+    FuzzyDice = [0,30.0,31.0]
+    PowerAC = [0,32.0,33.0]
+    BearChange = [0,34.0,35.0]
+    MaskUpgr = [0,36.0,37.0]
+    Retina = [0,38.0,39.0]
+    Spawnkiller = [0,40.0]
+    Talbert = [0,41.0]
+    if itemID == 19870042:
+        return Overcharge[count]
+    elif itemID == 19870043:
+        return MiniMultipler[count]
+    elif itemID == 19870044:
+        return EmployDiscount[count]
+    elif itemID == 19870045:
+        return BackdoorTrade[count]
+    elif itemID == 19870046:
+        return CamRadar[count]
+    elif itemID == 19870047:
+        return Superfan[count]
+    elif itemID == 19870048:
+        return Headstart[count]
+    elif itemID == 19870049:
+        return Overstock[count]
+    elif itemID == 19870050:
+        return Investment[count]
+    elif itemID == 19870051:
+        return Loan[count]
+    elif itemID == 19870057:
+        return MangleCart[count]
+    elif itemID == 19870058:
+        return CupcakeCart[count]
+    elif itemID == 19870059:
+        return AnimdudeCart[count]
+    elif itemID == 19870052:
+        return FuzzyDice[count]
+    elif itemID == 19870053:
+        return PowerAC[count]
+    elif itemID == 19870054:
+        return BearChange[count]
+    elif itemID == 19870055:
+        return MaskUpgr[count]
+    elif itemID == 19870056:
+        return Retina[count]
+    elif itemID == 19870060:
+        return Spawnkiller[count]
+    elif itemID == 19870061:
+        return Talbert[count]
+
 
 class Frickbears3ClientCommandProcessor(ClientCommandProcessor):
     def _cmd_resync(self):
         """Manually trigger a resync."""
-        self.output(f"Syncing items.")
-        self.ctx.syncing = True
+        #self.output(f"Syncing items.")
+        #self.ctx.syncing = True
+        logger.error(self.ctx.checked_locations)
+        logger.error(self.ctx.checked_locations[0])
 
 
 class Frickbears3Context(CommonContext):
@@ -157,6 +221,41 @@ async def game_watcher(ctx: Frickbears3Context):
                     sending.append(shopID_to_locID(int(float(x))))
         ctx.locations_checked = sending
         message = [{"cmd": 'LocationChecks', "locations": sending}]
+
+        itemArray = []
+        itemCountArray = []
+        upgrades = []
+        for x in ctx.items_received:
+            if x[0] >= 19870042 and x[0] <= 19870061:
+                if itemArray.count(x[0]) == 0:
+                    itemArray.append(x[0])
+                    itemCountArray.append(1)
+                else:
+                    itemCountArray[itemArray.index(x[0])] += 1
+
+        for x in range(len(itemArray)):
+            upgrades.append(itemIDCount_to_upgradeID(itemArray[x],itemCountArray[x]))
+
+        for x in ctx.checked_locations:
+            if x >= 19875042 and x <= 19875083:
+                upgrades.append(x-19875000)
+
+        file1 = open(r"C:\Users\darea\AppData\Local\Frickbears3/savedata2-13-25.wario")
+        saveData = file1.read()
+        file1.close()
+        saveData1 = saveData.partition('"_Upgrades":[')
+        saveData2 = saveData.partition('],"_Deaths"')
+        upgradesStr = "["
+        for x in range(len(upgrades)):
+            if x != 0:
+                upgradesStr += ","+str(upgrades[x])
+            else:
+                upgradesStr += str(upgrades[x])
+        newUpgradeData = '"_Upgrades":' + upgradesStr
+        file1 = open(r"C:\Users\darea\AppData\Local\Frickbears3/savedata2-13-25.wario","w")
+        file1.write(saveData1[0]+newUpgradeData+saveData2[1]+saveData2[2])
+        file1.close()
+
         await ctx.send_msgs(message)
         if not ctx.finished_game and victory:
             await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
