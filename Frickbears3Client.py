@@ -45,6 +45,8 @@ def itemIDCount_to_upgradeID(itemID: int, count: int) -> float:
     Retina = [0,38.0,39.0]
     Spawnkiller = [0,40.0]
     Talbert = [0,41.0]
+    Hatchet = [0,91.0]
+    PnSKey = [0,92.0]
     if itemID == 19870042:
         return Overcharge[count]
     elif itemID == 19870043:
@@ -85,6 +87,11 @@ def itemIDCount_to_upgradeID(itemID: int, count: int) -> float:
         return Spawnkiller[count]
     elif itemID == 19870061:
         return Talbert[count]
+    elif itemID == 19870062:
+        return Hatchet[count]
+    elif itemID == 19870063:
+        return PnSKey[count]
+    
 
 
 class Frickbears3ClientCommandProcessor(ClientCommandProcessor):
@@ -217,8 +224,20 @@ async def game_watcher(ctx: Frickbears3Context):
             for x in bought:
                 if x == '':
                     continue
-                if int(float(x)) >= 42 and int(float(x)) <= 83:
+                if int(float(x)) >= 42 and int(float(x)) <= 90:
                     sending.append(shopID_to_locID(int(float(x))))
+        if file.find('_CanContinue":false') > -1:
+            # NOTE: CHECK WHETHER OR NOT THIS IS ACTUALLY THE CORRECT ROUTE NUMBERS
+            if file.find('Route":0') > -1:
+                sending.append(19875091)
+            elif file.find('Route":1') > -1:
+                sending.append(19875092)
+            elif file.find('Route":2') > -1:
+                sending.append(19875093)
+            elif file.find('Route":3') > -1:
+                sending.append(19875094)
+            elif file.find('Route":4') > -1:
+                sending.append(19875095)
         ctx.locations_checked = sending
         message = [{"cmd": 'LocationChecks', "locations": sending}]
 
@@ -226,13 +245,14 @@ async def game_watcher(ctx: Frickbears3Context):
         itemCountArray = []
         upgrades = []
         for x in ctx.items_received:
-            if x[0] >= 19870042 and x[0] <= 19870061:
+            if x[0] >= 19870042 and x[0] <= 19870063:
                 if itemArray.count(x[0]) == 0:
                     itemArray.append(x[0])
                     itemCountArray.append(1)
                 else:
                     itemCountArray[itemArray.index(x[0])] += 1
-
+            if x[0] == 19870065:
+                victory = True
         for x in range(len(itemArray)):
             upgrades.append(itemIDCount_to_upgradeID(itemArray[x],itemCountArray[x]))
 
