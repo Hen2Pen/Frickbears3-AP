@@ -230,11 +230,11 @@ async def game_watcher(ctx: Frickbears3Context):
             # NOTE: CHECK WHETHER OR NOT THIS IS ACTUALLY THE CORRECT ROUTE NUMBERS
             if file.find('Route":0') > -1:
                 sending.append(19875091)
-            elif file.find('Route":1') > -1:
-                sending.append(19875092)
             elif file.find('Route":2') > -1:
-                sending.append(19875093)
+                sending.append(19875092)
             elif file.find('Route":3') > -1:
+                sending.append(19875093)
+            elif file.find('Route":1') > -1:
                 sending.append(19875094)
             elif file.find('Route":4') > -1:
                 sending.append(19875095)
