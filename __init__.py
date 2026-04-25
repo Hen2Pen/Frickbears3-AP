@@ -90,8 +90,8 @@ class Frickbears3World(World):
         # Push precollected is how you give your player items they need to start with
         # This is for options though. Dont worry about the starting inventory option thats in all yamls
         # AP handles that one
-        #self.multiworld.push_precollected(self.create_item(starting_chapter))
-        pass
+        for x in range(42):
+            self.options.start_location_hints.value.add("Purchase AP Item #"+(str(x+1)))
 
     # Regions are the different locations in your world. So like Undead Burgh in dark souls or Pacifilog Town in pokemon
     # They dont have to match your game, they can be whatever you need them to be for organization

@@ -272,9 +272,11 @@ async def game_watcher(ctx: Frickbears3Context):
             else:
                 upgradesStr += str(upgrades[x])
         newUpgradeData = '"_Upgrades":' + upgradesStr
-        file1 = open(r"C:\Users\darea\AppData\Local\Frickbears3/savedata2-13-25.wario","w")
-        file1.write(saveData1[0]+newUpgradeData+saveData2[1]+saveData2[2])
-        file1.close()
+        if file.find('_SaveRecent":true'):
+            file1 = open(r"C:\Users\darea\AppData\Local\Frickbears3/savedata2-13-25.wario","w")
+            fuckitweball = saveData2.partition('_SaveRecent":true}')
+            file1.write(saveData1[0]+newUpgradeData+saveData2[1]+fuckitweball[0]+'_SaveRecent":false}')
+            file1.close()
 
         await ctx.send_msgs(message)
         if not ctx.finished_game and victory:
