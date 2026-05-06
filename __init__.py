@@ -11,9 +11,12 @@
 # Here you are only grabbing the randrange function from random. This is less bulky but you need to put exactly what you want from that file/library
 # If you want more things from the import add a comma like the worlds.AutoWorld import below
 import logging
+import random
 
 from BaseClasses import MultiWorld, Item, Tutorial
 from worlds.AutoWorld import World, CollectionState, WebWorld
+from worlds.LauncherComponents import Component, components
+from multiprocessing import Process
 from typing import Dict
 
 from .Locations import get_location_names, get_total_locations
@@ -22,6 +25,14 @@ from .Options import Frickbears3Options
 from .Regions import create_regions
 from .Types import ChapterType, chapter_type_to_name
 from .Rules import set_rules
+
+def run_client():
+    print('Running Frickbears3 Client')
+    from .Frickbears3Client import main  # lazy import
+    p = Process(target=main)
+    p.start()
+
+components.append(Component("Frickbears3 Client", func=run_client))
 
 # This is where you setup the page on the site!
 # Typically is the name of your game with web
@@ -80,8 +91,9 @@ class Frickbears3World(World):
         # Push precollected is how you give your player items they need to start with
         # This is for options though. Dont worry about the starting inventory option thats in all yamls
         # AP handles that one
-        #self.multiworld.push_precollected(self.create_item(starting_chapter))
-        pass
+        for x in range(42):
+            self.options.start_location_hints.value.add("Purchase AP Item #"+(str(x+1)))
+        self.options.RandomSalvageSeed.value = random.randint(0,999999999999)
 
     # Regions are the different locations in your world. So like Undead Burgh in dark souls or Pacifilog Town in pokemon
     # They dont have to match your game, they can be whatever you need them to be for organization
@@ -112,7 +124,8 @@ class Frickbears3World(World):
             "options": {
                 "GoalEnding":           self.options.GoalEnding.value,
                 "Difficulty":           self.options.Difficulty.value,
-                "RandomiseSalvages":    self.options.RandomiseSalvages.value
+                "RandomiseSalvages":    self.options.RandomiseSalvages.value,
+                "RandomSalvageSeed":    self.options.RandomSalvageSeed.value
             },
             "Seed": self.multiworld.seed_name,  # to verify the server's multiworld
             "Slot": self.multiworld.player_name[self.player],  # to connect to server

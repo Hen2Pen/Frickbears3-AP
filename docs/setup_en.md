@@ -1,18 +1,17 @@
-# Your game here!
+# Five Nights at Frickbears 3
 
 ## Required Software
 
-- A legally obtained copy of the game your are randomizing. Include the version if it needs to be specific (IE: NTSC/NA/Steam/Whatever else)
-- Anything else!
-    - You can use [this syntax to add hyperlinks to emulators or other web pages](https://www.ikea.com/us/en/p/blahaj-soft-toy-shark-90373590/)
-    - Be specific! Include versions! You'll still get asked why it's broken and it'll be a versioning issue but hey you can try
+- Five Nights at Frickbears 3, accessible for free on [Gamejolt](https://gamejolt.com/games/frickbears3/930477)
+- The Archipelago Mod for Frickbears 3, found [here](Do later)
 - The built-in Archipelago client, which can be installed [here](https://github.com/ArchipelagoMW/Archipelago/releases)
+- The Frickbears 3 Poptracker (Optional)
+    - Poptracker, latest version found [here](https://poptracker.github.io/)
+    - Frickbears 3 specific Poptracker pack, found [here](Insert Later)
 
 ## Configuring your YAML file
 
 ### What is a YAML file and why do I need one?
-
-You can leave this alone since it will be the same for every game so just delete this! I'm just here for explanations.
 
 Your YAML file contains a set of configuration options which provide the generator with information about how it should
 generate your game. Each player of a multiworld will provide their own YAML file. This setup allows each player to enjoy
@@ -20,13 +19,18 @@ an experience customized for their taste, and different players in the same mult
 
 ### Where do I get a YAML file?
 
-You can customize your options by visiting the [Your Game Here Options Page](/games/Your%20Game%20Here/player-options).
-
-Another hyperlink to the options page. The %20 in the link is a space. Make sure it matches the name you put for the your_game_here for the en_your_game_here.md doc.
+You can generate a YAML file using your Archipelago Launcher, search and open the "Generate Template Options" program 
+then find "Five Night's at Frickbears 3.yaml" in the templates folder, open it in a text editor of your choice and change
+all values to your choice.
 
 ### Connect to the MultiServer
 
-1. Just describe how to get it connected
+1. Install the Frickbears 3.apworld
 
-2. Include any optional steps
-    - You can use this syntax to add sub steps
+2. Install the Frickbears 3 Archipelago mod
+
+3. Open Five Night's at Frickbears 3, create a new game then return to the main menu (this is to ensure the client does not read old saves)
+
+4. Open the Frickbears 3 client in the Archipelago Launcher and connect to the Multiworld Server
+
+5. Start a new game once you're ready
