@@ -11,6 +11,7 @@
 # Here you are only grabbing the randrange function from random. This is less bulky but you need to put exactly what you want from that file/library
 # If you want more things from the import add a comma like the worlds.AutoWorld import below
 import logging
+import random
 
 from BaseClasses import MultiWorld, Item, Tutorial
 from worlds.AutoWorld import World, CollectionState, WebWorld
@@ -92,6 +93,7 @@ class Frickbears3World(World):
         # AP handles that one
         for x in range(42):
             self.options.start_location_hints.value.add("Purchase AP Item #"+(str(x+1)))
+        self.options.RandomSalvageSeed.value = random.randint(0,999999999999)
 
     # Regions are the different locations in your world. So like Undead Burgh in dark souls or Pacifilog Town in pokemon
     # They dont have to match your game, they can be whatever you need them to be for organization
@@ -122,7 +124,8 @@ class Frickbears3World(World):
             "options": {
                 "GoalEnding":           self.options.GoalEnding.value,
                 "Difficulty":           self.options.Difficulty.value,
-                "RandomiseSalvages":    self.options.RandomiseSalvages.value
+                "RandomiseSalvages":    self.options.RandomiseSalvages.value,
+                "RandomSalvageSeed":    self.options.RandomSalvageSeed.value
             },
             "Seed": self.multiworld.seed_name,  # to verify the server's multiworld
             "Slot": self.multiworld.player_name[self.player],  # to connect to server

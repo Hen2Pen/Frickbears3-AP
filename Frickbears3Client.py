@@ -24,6 +24,10 @@ def shopID_to_locID(shopID: int) -> int:
     base = 19875000
     return (base+shopID)
 
+def salvUpgradeID_to_locID(salvUpgradeID: int) -> int:
+    base = 19874908
+    return (base+salvUpgradeID)
+
 def itemIDCount_to_upgradeID(itemID: int, count: int) -> float:
     Overcharge = [0,0.0,1.0,2.0]
     MiniMultipler = [0,3.0,4.0,5.0]
@@ -47,60 +51,87 @@ def itemIDCount_to_upgradeID(itemID: int, count: int) -> float:
     Talbert = [0,41.0]
     Hatchet = [0,91.0]
     PnSKey = [0,92.0]
-    if itemID == 19870042:
-        return Overcharge[count]
-    elif itemID == 19870043:
-        return MiniMultipler[count]
-    elif itemID == 19870044:
-        return EmployDiscount[count]
-    elif itemID == 19870045:
-        return BackdoorTrade[count]
-    elif itemID == 19870046:
-        return CamRadar[count]
-    elif itemID == 19870047:
-        return Superfan[count]
-    elif itemID == 19870048:
-        return Headstart[count]
-    elif itemID == 19870049:
-        return Overstock[count]
-    elif itemID == 19870050:
-        return Investment[count]
-    elif itemID == 19870051:
-        return Loan[count]
-    elif itemID == 19870057:
-        return MangleCart[count]
-    elif itemID == 19870058:
-        return CupcakeCart[count]
-    elif itemID == 19870059:
-        return AnimdudeCart[count]
-    elif itemID == 19870052:
-        return FuzzyDice[count]
-    elif itemID == 19870053:
-        return PowerAC[count]
-    elif itemID == 19870054:
-        return BearChange[count]
-    elif itemID == 19870055:
-        return MaskUpgr[count]
-    elif itemID == 19870056:
-        return Retina[count]
-    elif itemID == 19870060:
-        return Spawnkiller[count]
-    elif itemID == 19870061:
-        return Talbert[count]
-    elif itemID == 19870062:
-        return Hatchet[count]
-    elif itemID == 19870063:
-        return PnSKey[count]
+    try:
+        if itemID == 19870042:
+            return Overcharge[count]
+        elif itemID == 19870043:
+            return MiniMultipler[count]
+        elif itemID == 19870044:
+            return EmployDiscount[count]
+        elif itemID == 19870045:
+            return BackdoorTrade[count]
+        elif itemID == 19870046:
+            return CamRadar[count]
+        elif itemID == 19870047:
+            return Superfan[count]
+        elif itemID == 19870048:
+            return Headstart[count]
+        elif itemID == 19870049:
+            return Overstock[count]
+        elif itemID == 19870050:
+            return Investment[count]
+        elif itemID == 19870051:
+            return Loan[count]
+        elif itemID == 19870057:
+            return MangleCart[count]
+        elif itemID == 19870058:
+            return CupcakeCart[count]
+        elif itemID == 19870059:
+            return AnimdudeCart[count]
+        elif itemID == 19870052:
+            return FuzzyDice[count]
+        elif itemID == 19870053:
+            return PowerAC[count]
+        elif itemID == 19870054:
+            return BearChange[count]
+        elif itemID == 19870055:
+            return MaskUpgr[count]
+        elif itemID == 19870056:
+            return Retina[count]
+        elif itemID == 19870060:
+            return Spawnkiller[count]
+        elif itemID == 19870061:
+            return Talbert[count]
+        elif itemID == 19870062:
+            return Hatchet[count]
+        elif itemID == 19870063:
+            return PnSKey[count]
+    except:
+        itemIDCount_to_upgradeID(itemID, count-1)
     
+def insertSeedInFrickbears(self):
+    frickSeed = self.frickSlotData["options"]["RandomSalvageSeed"]
+    frickRngSalvage = self.frickSlotData["options"]["RandomiseSalvages"]
+    frickRecordSave = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/records2-13-25.wario"))
+    frickRecordStr = frickRecordSave.read()
+    frickRecordSave.close()
+    if frickRecordStr.find('"_ArchipelagoSeed":') > -1:
+           frickEdit = frickRecordStr.partition('"_ArchipelagoSeed":')
+           frickEdit2 = frickEdit[2].partition(',"_Playtime"')
+           newFrickSeed = '"_ArchipelagoSeed":' + str(frickSeed)
+           frickRecordSave = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/records2-13-25.wario"), "w")
+           frickRecordSave.write(frickEdit[0]+newFrickSeed+frickEdit2[1]+frickEdit2[2])
+           frickRecordSave.close()
+    frickRecordSave = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/records2-13-25.wario"))
+    frickRecordStr = frickRecordSave.read()
+    frickRecordSave.close()
+    if frickRecordStr.find('"_RandomSalvages":') > -1:
+           frickEdit = frickRecordStr.partition('"_RandomSalvages":')
+           frickEdit2 = frickEdit[2].partition(',"_UnlockFlags"')
+           newFrickSeed = '"_RandomSalvages":' + str(frickRngSalvage)
+           frickRecordSave = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/records2-13-25.wario"), "w")
+           frickRecordSave.write(frickEdit[0]+newFrickSeed+frickEdit2[1]+frickEdit2[2])
+           frickRecordSave.close()
+    else:
+        logger.error("Save Data for _ArchipelagoSeed not found, cannot set seed")
+    frickRecordSave.close()
 
 
 class Frickbears3ClientCommandProcessor(ClientCommandProcessor):
     def _cmd_resync(self):
-        """Manually trigger a resync."""
-        #self.output(f"Syncing items.")
-        #self.ctx.syncing = True
-        logger.error(self.ctx.checked_locations)
-        logger.error(self.ctx.checked_locations[0])
+        """Manually refreshes the seed in frickbears"""
+        pass
+      #  insertSeedInFrickbears(self)
 
 
 class Frickbears3Context(CommonContext):
@@ -113,6 +144,8 @@ class Frickbears3Context(CommonContext):
         self.send_index: int = 0
         self.syncing = False
         self.awaiting_bridge = False
+        self.frickSlotData = None
+        self.allowSending = False
         # self.game_communication_path: files go in this path to pass data between us and the actual game
         if "localappdata" in os.environ:
             self.game_communication_path = os.path.expandvars(r"%localappdata%/Frickbears3/savedata2-13-25.wario")
@@ -161,6 +194,9 @@ class Frickbears3Context(CommonContext):
 
     def on_package(self, cmd: str, args: dict):
         if cmd in {"Connected"}:
+            self.frickSlotData = args["slot_data"]
+            self.allowSending = True
+            insertSeedInFrickbears(self)
             if not os.path.exists(self.game_communication_path):
                 os.makedirs(self.game_communication_path)
             #for ss in self.checked_locations:
@@ -207,37 +243,48 @@ async def game_watcher(ctx: Frickbears3Context):
             ctx.syncing = False
         sending = []
         victory = False
-        file1 = open(r"C:\Users\darea\AppData\Local\Frickbears3/savedata2-13-25.wario")
+        file1 = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/savedata2-13-25.wario"))
         file = file1.read()
         file1.close()
-        if file.find('_Salvages":') > -1:
-           pt1 = file.partition('_Salvages":[')
-           pt2 = pt1[2].partition('],"_Masks"')
-           salvaged = pt2[0].split(",")
-           for x in salvaged:
-               if salvageID_to_locID(int(float(x))) != 0:
-                  sending.append(salvageID_to_locID(int(float(x))))
-        if file.find('_Upgrades":') > -1:
-            pt1 = file.partition('_Upgrades":[')
-            pt2 = pt1[2].partition('],"_Deaths"')
-            bought = pt2[0].split(",")
-            for x in bought:
-                if x == '':
-                    continue
-                if int(float(x)) >= 42 and int(float(x)) <= 90:
-                    sending.append(shopID_to_locID(int(float(x))))
-        if file.find('_CanContinue":false') > -1:
-            # NOTE: CHECK WHETHER OR NOT THIS IS ACTUALLY THE CORRECT ROUTE NUMBERS
-            if file.find('Route":0') > -1:
-                sending.append(19875091)
-            elif file.find('Route":2') > -1:
-                sending.append(19875092)
-            elif file.find('Route":3') > -1:
-                sending.append(19875093)
-            elif file.find('Route":1') > -1:
-                sending.append(19875094)
-            elif file.find('Route":4') > -1:
-                sending.append(19875095)
+        if ctx.allowSending:
+            if ctx.frickSlotData["options"]["RandomiseSalvages"] == 1:
+                if file.find('_Upgrades":') > -1:
+                    pt1 = file.partition('_Upgrades":[')
+                    pt2 = pt1[2].partition('],"_Deaths"')
+                    bought = pt2[0].split(",")
+                    for x in bought:
+                        if x == '':
+                            continue
+                        if int(float(x)) >= 93 and int(float(x)) <= 133:
+                            sending.append(salvUpgradeID_to_locID(int(float(x))))
+            else:
+                if file.find('_Salvages":') > -1:
+                    pt1 = file.partition('_Salvages":[')
+                    pt2 = pt1[2].partition('],"_Masks"')
+                    salvaged = pt2[0].split(",")
+                    for x in salvaged:
+                        if salvageID_to_locID(int(float(x))) != 0:
+                            sending.append(salvageID_to_locID(int(float(x))))
+            if file.find('_Upgrades":') > -1:
+                pt1 = file.partition('_Upgrades":[')
+                pt2 = pt1[2].partition('],"_Deaths"')
+                bought = pt2[0].split(",")
+                for x in bought:
+                    if x == '':
+                        continue
+                    if int(float(x)) >= 42 and int(float(x)) <= 90:
+                        sending.append(shopID_to_locID(int(float(x))))
+            if file.find('_CanContinue":false') > -1:
+                if file.find('Route":0') > -1:
+                    sending.append(19875091)
+                elif file.find('Route":2') > -1:
+                    sending.append(19875092)
+                elif file.find('Route":3') > -1:
+                    sending.append(19875093)
+                elif file.find('Route":1') > -1:
+                    sending.append(19875094)
+                elif file.find('Route":4') > -1:
+                    sending.append(19875095)
         ctx.locations_checked = sending
         message = [{"cmd": 'LocationChecks', "locations": sending}]
 
@@ -260,7 +307,7 @@ async def game_watcher(ctx: Frickbears3Context):
             if x >= 19875042 and x <= 19875083:
                 upgrades.append(x-19875000)
 
-        file1 = open(r"C:\Users\darea\AppData\Local\Frickbears3/savedata2-13-25.wario")
+        file1 = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/savedata2-13-25.wario"))
         saveData = file1.read()
         file1.close()
         saveData1 = saveData.partition('"_Upgrades":[')
@@ -272,9 +319,9 @@ async def game_watcher(ctx: Frickbears3Context):
             else:
                 upgradesStr += str(upgrades[x])
         newUpgradeData = '"_Upgrades":' + upgradesStr
-        if file.find('_SaveRecent":true'):
-            file1 = open(r"C:\Users\darea\AppData\Local\Frickbears3/savedata2-13-25.wario","w")
-            fuckitweball = saveData2.partition('_SaveRecent":true}')
+        if saveData2[2].find('_SaveRecent":true') > -1:
+            file1 = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/savedata2-13-25.wario"),"w")
+            fuckitweball = saveData2[2].partition('_SaveRecent":true}')
             file1.write(saveData1[0]+newUpgradeData+saveData2[1]+fuckitweball[0]+'_SaveRecent":false}')
             file1.close()
 

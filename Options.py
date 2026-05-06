@@ -1,7 +1,7 @@
 from typing import List, Dict, Any
 from dataclasses import dataclass
 from worlds.AutoWorld import PerGameCommonOptions
-from Options import Choice, OptionGroup, Toggle, Range
+from Options import Choice, OptionGroup, Toggle, Range, Visibility
 
 # If youve ever gone to an options page and seen how sometimes options are grouped
 # This is that
@@ -51,11 +51,20 @@ class RandomiseSalvages(Toggle):
     """
     display_name = "Randomise Salvages"
 
+class RandomSalvageSeed(Range):
+    """
+    This shouldn't be visible, but this is randomised during generation and is passed along to the mod to ensure animatronics are randomised the same every game
+    """
+    visibility = Visibility.none 
+    range_start = 0
+    range_end = 999999999999
+
 @dataclass
 class Frickbears3Options(PerGameCommonOptions):
     GoalEnding:             GoalEnding
     Difficulty:             Difficulty
     RandomiseSalvages:      RandomiseSalvages
+    RandomSalvageSeed:      RandomSalvageSeed
 
 # This is where you organize your options
 # Its entirely up to you how you want to organize it
