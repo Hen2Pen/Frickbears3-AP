@@ -19,11 +19,11 @@ Animatronics can be salvaged without receiving their corrosponding unlock item, 
 ## Required Software
 
 - Five Nights at Frickbears 3, accessible for free on [Gamejolt](https://gamejolt.com/games/frickbears3/930477)
-- The Archipelago Mod for Frickbears 3, found [here](Do later)
+- The Archipelago Mod for Frickbears 3, found [here](https://github.com/Hen2Pen/Frickbears3-AP/releases/)
 - The built-in Archipelago client, which can be installed [here](https://github.com/ArchipelagoMW/Archipelago/releases)
 - The Frickbears 3 Poptracker (Optional)
     - Poptracker, latest version found [here](https://poptracker.github.io/)
-    - Frickbears 3 specific Poptracker pack, found [here](Insert Later)
+    - Frickbears 3 specific Poptracker pack, found [here](https://github.com/Hen2Pen/Frickbears3-AP/releases/)
 
 ## Configuring your YAML file
 
