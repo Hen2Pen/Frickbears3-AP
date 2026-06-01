@@ -3,11 +3,20 @@ import os
 import sys
 import asyncio
 import shutil
+import platform
 
 import ModuleUpdate
 ModuleUpdate.update()
 
 import Utils
+
+plat = platform.platform()
+if "Linux" in plat:
+    path = os.path.expandvars("$HOME/.wine/drive_c/users/$USER/AppData/Local/Frickbears3")
+elif "Windows" in plat:
+    path = os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3")
+else:
+    raise Exception(f"Platform {plat} not supported")
 
 if __name__ == "__main__":
     Utils.init_logging("Frickbears3Client", exception_logger="Client")
@@ -102,24 +111,24 @@ def itemIDCount_to_upgradeID(itemID: int, count: int) -> float:
 def insertSeedInFrickbears(self):
     frickSeed = self.frickSlotData["options"]["RandomSalvageSeed"]
     frickRngSalvage = self.frickSlotData["options"]["RandomiseSalvages"]
-    frickRecordSave = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/records2-13-25.wario"))
+    frickRecordSave = open(os.path.expandvars(f"{path}/records2-13-25.wario"))
     frickRecordStr = frickRecordSave.read()
     frickRecordSave.close()
     if frickRecordStr.find('"_ArchipelagoSeed":') > -1:
            frickEdit = frickRecordStr.partition('"_ArchipelagoSeed":')
            frickEdit2 = frickEdit[2].partition(',"_Playtime"')
            newFrickSeed = '"_ArchipelagoSeed":' + str(frickSeed)
-           frickRecordSave = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/records2-13-25.wario"), "w")
+           frickRecordSave = open(os.path.expandvars(f"{path}/records2-13-25.wario"), "w")
            frickRecordSave.write(frickEdit[0]+newFrickSeed+frickEdit2[1]+frickEdit2[2])
            frickRecordSave.close()
-    frickRecordSave = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/records2-13-25.wario"))
+    frickRecordSave = open(os.path.expandvars(f"{path}/records2-13-25.wario"))
     frickRecordStr = frickRecordSave.read()
     frickRecordSave.close()
     if frickRecordStr.find('"_RandomSalvages":') > -1:
            frickEdit = frickRecordStr.partition('"_RandomSalvages":')
            frickEdit2 = frickEdit[2].partition(',"_UnlockFlags"')
            newFrickSeed = '"_RandomSalvages":' + str(frickRngSalvage)
-           frickRecordSave = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/records2-13-25.wario"), "w")
+           frickRecordSave = open(os.path.expandvars(f"{path}/records2-13-25.wario"), "w")
            frickRecordSave.write(frickEdit[0]+newFrickSeed+frickEdit2[1]+frickEdit2[2])
            frickRecordSave.close()
     else:
@@ -243,7 +252,7 @@ async def game_watcher(ctx: Frickbears3Context):
             ctx.syncing = False
         sending = []
         victory = False
-        file1 = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/savedata2-13-25.wario"))
+        file1 = open(os.path.expandvars(f"{path}/savedata2-13-25.wario"))
         file = file1.read()
         file1.close()
         if ctx.allowSending:
@@ -307,7 +316,7 @@ async def game_watcher(ctx: Frickbears3Context):
             if x >= 19875042 and x <= 19875083:
                 upgrades.append(x-19875000)
 
-        file1 = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/savedata2-13-25.wario"))
+        file1 = open(os.path.expandvars(f"{path}/savedata2-13-25.wario"))
         saveData = file1.read()
         file1.close()
         saveData1 = saveData.partition('"_Upgrades":[')
@@ -320,7 +329,7 @@ async def game_watcher(ctx: Frickbears3Context):
                 upgradesStr += str(upgrades[x])
         newUpgradeData = '"_Upgrades":' + upgradesStr
         if saveData2[2].find('_SaveRecent":true') > -1:
-            file1 = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/savedata2-13-25.wario"),"w")
+            file1 = open(os.path.expandvars(f"{path}/savedata2-13-25.wario"),"w")
             fuckitweball = saveData2[2].partition('_SaveRecent":true}')
             file1.write(saveData1[0]+newUpgradeData+saveData2[1]+fuckitweball[0]+'_SaveRecent":false}')
             file1.close()
