@@ -111,6 +111,7 @@ def itemIDCount_to_upgradeID(itemID: int, count: int) -> float:
 def insertSeedInFrickbears(self):
     frickSeed = self.frickSlotData["options"]["RandomSalvageSeed"]
     frickRngSalvage = self.frickSlotData["options"]["RandomiseSalvages"]
+    frickTokenBounty = self.frickSlotData["options"]["SalvageArcadeTokenBounty"]
     frickRecordSave = open(os.path.expandvars(f"{path}/records2-13-25.wario"))
     frickRecordStr = frickRecordSave.read()
     frickRecordSave.close()
@@ -128,6 +129,16 @@ def insertSeedInFrickbears(self):
            frickEdit = frickRecordStr.partition('"_RandomSalvages":')
            frickEdit2 = frickEdit[2].partition(',"_UnlockFlags"')
            newFrickSeed = '"_RandomSalvages":' + str(frickRngSalvage)
+           frickRecordSave = open(os.path.expandvars(f"{path}/records2-13-25.wario"), "w")
+           frickRecordSave.write(frickEdit[0]+newFrickSeed+frickEdit2[1]+frickEdit2[2])
+           frickRecordSave.close()
+    frickRecordSave = open(os.path.expandvars(f"{path}/records2-13-25.wario"))
+    frickRecordStr = frickRecordSave.read()
+    frickRecordSave.close()
+    if frickRecordStr.find('"MoneyPerToken":') > -1:
+           frickEdit = frickRecordStr.partition('"_MoneyPerToken":')
+           frickEdit2 = frickEdit[2].partition(',"_UnlockedAnimatronics"')
+           newFrickSeed = '"_MoneyPerToken":' + float(int(frickTokenBounty)/100)
            frickRecordSave = open(os.path.expandvars(f"{path}/records2-13-25.wario"), "w")
            frickRecordSave.write(frickEdit[0]+newFrickSeed+frickEdit2[1]+frickEdit2[2])
            frickRecordSave.close()
