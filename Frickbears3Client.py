@@ -122,6 +122,8 @@ def insertSeedInFrickbears(self):
            frickRecordSave = open(os.path.expandvars(f"{path}/records2-13-25.wario"), "w")
            frickRecordSave.write(frickEdit[0]+newFrickSeed+frickEdit2[1]+frickEdit2[2])
            frickRecordSave.close()
+    else:
+        logger.error("Save Data for _ArchipelagoSeed not found, cannot set seed")
     frickRecordSave = open(os.path.expandvars(f"{path}/records2-13-25.wario"))
     frickRecordStr = frickRecordSave.read()
     frickRecordSave.close()
@@ -132,18 +134,20 @@ def insertSeedInFrickbears(self):
            frickRecordSave = open(os.path.expandvars(f"{path}/records2-13-25.wario"), "w")
            frickRecordSave.write(frickEdit[0]+newFrickSeed+frickEdit2[1]+frickEdit2[2])
            frickRecordSave.close()
+    else:
+        logger.error("Save Data for _RandomSalvages not found, cannot set seed")
     frickRecordSave = open(os.path.expandvars(f"{path}/records2-13-25.wario"))
     frickRecordStr = frickRecordSave.read()
     frickRecordSave.close()
-    if frickRecordStr.find('"MoneyPerToken":') > -1:
+    if frickRecordStr.find('"_MoneyPerToken":') > -1:
            frickEdit = frickRecordStr.partition('"_MoneyPerToken":')
            frickEdit2 = frickEdit[2].partition(',"_UnlockedAnimatronics"')
-           newFrickSeed = '"_MoneyPerToken":' + float(int(frickTokenBounty)/100)
+           newFrickSeed = '"_MoneyPerToken":' + str(float(int(frickTokenBounty)/100))
            frickRecordSave = open(os.path.expandvars(f"{path}/records2-13-25.wario"), "w")
            frickRecordSave.write(frickEdit[0]+newFrickSeed+frickEdit2[1]+frickEdit2[2])
            frickRecordSave.close()
     else:
-        logger.error("Save Data for _ArchipelagoSeed not found, cannot set seed")
+        logger.error("Save Data for _MoneyPerToken not found, cannot set seed")
     frickRecordSave.close()
 
 

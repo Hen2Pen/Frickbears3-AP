@@ -125,7 +125,8 @@ class Frickbears3World(World):
                 "GoalEnding":           self.options.GoalEnding.value,
                 "Difficulty":           self.options.Difficulty.value,
                 "RandomiseSalvages":    self.options.RandomiseSalvages.value,
-                "RandomSalvageSeed":    self.options.RandomSalvageSeed.value
+                "RandomSalvageSeed":    self.options.RandomSalvageSeed.value,
+                "SalvageArcadeTokenBounty": self.options.SalvageArcadeTokenBounty.value
             },
             "Seed": self.multiworld.seed_name,  # to verify the server's multiworld
             "Slot": self.multiworld.player_name[self.player],  # to connect to server

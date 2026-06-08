@@ -80,5 +80,5 @@ class Frickbears3Options(PerGameCommonOptions):
 # This is where you organize your options
 # Its entirely up to you how you want to organize it
 frickbears3_option_groups: Dict[str, List[Any]] = {
-    "General Options": [GoalEnding, Difficulty, RandomiseSalvages]
+    "General Options": [GoalEnding, Difficulty, RandomiseSalvages, SalvageArcadeTokenBounty]
 }
