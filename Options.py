@@ -54,10 +54,12 @@ class RandomiseSalvages(Toggle):
 class SalvageArcadeTokenBounty(Range):
     """
     How many cents you are rewarded for each token you get during Salvage Arcade minigames. (This value is not Dollars and will be divided by 100 ingame)
+    Set to 0 to disable
     """
     display_name = "Salvage Arcade Token Bounty"
     range_start = 0
     range_end = 10000
+    default = 1000
 
 class RandomSalvageSeed(Range):
     """
