@@ -47,9 +47,19 @@ class Difficulty(Choice):
 
 class RandomiseSalvages(Toggle):
     """
-    This randomises which animatronics can be salvaged where. This currently does nothing and isn't implemented
+    This randomises which animatronics can be salvaged where.
     """
     display_name = "Randomise Salvages"
+
+class SalvageArcadeTokenBounty(Range):
+    """
+    How many cents you are rewarded for each token you get during Salvage Arcade minigames. (This value is not Dollars and will be divided by 100 ingame)
+    Set to 0 to disable
+    """
+    display_name = "Salvage Arcade Token Bounty"
+    range_start = 0
+    range_end = 10000
+    default = 1000
 
 class RandomSalvageSeed(Range):
     """
@@ -61,13 +71,14 @@ class RandomSalvageSeed(Range):
 
 @dataclass
 class Frickbears3Options(PerGameCommonOptions):
-    GoalEnding:             GoalEnding
-    Difficulty:             Difficulty
-    RandomiseSalvages:      RandomiseSalvages
-    RandomSalvageSeed:      RandomSalvageSeed
+    GoalEnding:               GoalEnding
+    Difficulty:               Difficulty
+    RandomiseSalvages:        RandomiseSalvages
+    SalvageArcadeTokenBounty: SalvageArcadeTokenBounty
+    RandomSalvageSeed:        RandomSalvageSeed
 
 # This is where you organize your options
 # Its entirely up to you how you want to organize it
 frickbears3_option_groups: Dict[str, List[Any]] = {
-    "General Options": [GoalEnding, Difficulty, RandomiseSalvages]
+    "General Options": [GoalEnding, Difficulty, RandomiseSalvages, SalvageArcadeTokenBounty]
 }
