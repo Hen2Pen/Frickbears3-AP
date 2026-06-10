@@ -3,11 +3,30 @@ import os
 import sys
 import asyncio
 import shutil
+import platform
 
 import ModuleUpdate
 ModuleUpdate.update()
 
 import Utils
+
+plat = platform.platform()
+if "Linux" in plat:
+    if "WINEPREFIX" in os.environ:
+        wineprefix = os.environ["WINEPREFIX"]
+    elif shutil.which("wine") or shutil.which("wine-stable"):
+        wineprefix = os.path.expanduser("~/.wine")
+    else:
+        raise Exception("Wine not found")
+    path = os.path.expandvars(f"{wineprefix}/drive_c/users/$USER/AppData/Local/Frickbears3")
+elif "Windows" in plat:
+    path = os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3")
+else:
+    raise Exception(f"Platform {plat} not supported")
+
+# This makes it easy to change the filenames if we ever use separate save files for AP, or if the game updates
+savedata_name = "savedata2-13-25.wario"
+records_name = "records2-13-25.wario"
 
 if __name__ == "__main__":
     Utils.init_logging("Frickbears3Client", exception_logger="Client")
@@ -102,24 +121,24 @@ def itemIDCount_to_upgradeID(itemID: int, count: int) -> float:
 def insertSeedInFrickbears(self):
     frickSeed = self.frickSlotData["options"]["RandomSalvageSeed"]
     frickRngSalvage = self.frickSlotData["options"]["RandomiseSalvages"]
-    frickRecordSave = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/records2-13-25.wario"))
+    frickRecordSave = open(os.path.expandvars(f"{path}/{records_name}"))
     frickRecordStr = frickRecordSave.read()
     frickRecordSave.close()
     if frickRecordStr.find('"_ArchipelagoSeed":') > -1:
            frickEdit = frickRecordStr.partition('"_ArchipelagoSeed":')
            frickEdit2 = frickEdit[2].partition(',"_Playtime"')
            newFrickSeed = '"_ArchipelagoSeed":' + str(frickSeed)
-           frickRecordSave = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/records2-13-25.wario"), "w")
+           frickRecordSave = open(os.path.expandvars(f"{path}/{records_name}"), "w")
            frickRecordSave.write(frickEdit[0]+newFrickSeed+frickEdit2[1]+frickEdit2[2])
            frickRecordSave.close()
-    frickRecordSave = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/records2-13-25.wario"))
+    frickRecordSave = open(os.path.expandvars(f"{path}/{records_name}"))
     frickRecordStr = frickRecordSave.read()
     frickRecordSave.close()
     if frickRecordStr.find('"_RandomSalvages":') > -1:
            frickEdit = frickRecordStr.partition('"_RandomSalvages":')
            frickEdit2 = frickEdit[2].partition(',"_UnlockFlags"')
            newFrickSeed = '"_RandomSalvages":' + str(frickRngSalvage)
-           frickRecordSave = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/records2-13-25.wario"), "w")
+           frickRecordSave = open(os.path.expandvars(f"{path}/{records_name}"), "w")
            frickRecordSave.write(frickEdit[0]+newFrickSeed+frickEdit2[1]+frickEdit2[2])
            frickRecordSave.close()
     else:
@@ -147,23 +166,7 @@ class Frickbears3Context(CommonContext):
         self.frickSlotData = None
         self.allowSending = False
         # self.game_communication_path: files go in this path to pass data between us and the actual game
-        if "localappdata" in os.environ:
-            self.game_communication_path = os.path.expandvars(r"%localappdata%/Frickbears3/savedata2-13-25.wario")
-        else:
-            # not windows. game is an exe so let's see if wine might be around to run it
-            if "WINEPREFIX" in os.environ:
-                wineprefix = os.environ["WINEPREFIX"]
-            elif shutil.which("wine") or shutil.which("wine-stable"):
-                wineprefix = os.path.expanduser("~/.wine") # default root of wine system data, deep in which is app data
-            else:
-                msg = "Frickbears3Client couldn't detect system type. Unable to infer required game_communication_path"
-                logger.error("Error: " + msg)
-                Utils.messagebox("Error", msg, error=True)
-                sys.exit(1)
-            self.game_communication_path = os.path.join(
-                wineprefix,
-                "drive_c",
-                os.path.expandvars("users/$USER/Local Settings/Application Data/ChecksFinder"))
+        self.game_communication_path = path
 
     async def server_auth(self, password_requested: bool = False):
         if password_requested and not self.password:
@@ -243,7 +246,7 @@ async def game_watcher(ctx: Frickbears3Context):
             ctx.syncing = False
         sending = []
         victory = False
-        file1 = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/savedata2-13-25.wario"))
+        file1 = open(os.path.expandvars(f"{path}/{savedata_name}"))
         file = file1.read()
         file1.close()
         if ctx.allowSending:
@@ -307,7 +310,7 @@ async def game_watcher(ctx: Frickbears3Context):
             if x >= 19875042 and x <= 19875083:
                 upgrades.append(x-19875000)
 
-        file1 = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/savedata2-13-25.wario"))
+        file1 = open(os.path.expandvars(f"{path}/{savedata_name}"))
         saveData = file1.read()
         file1.close()
         saveData1 = saveData.partition('"_Upgrades":[')
@@ -320,7 +323,7 @@ async def game_watcher(ctx: Frickbears3Context):
                 upgradesStr += str(upgrades[x])
         newUpgradeData = '"_Upgrades":' + upgradesStr
         if saveData2[2].find('_SaveRecent":true') > -1:
-            file1 = open(os.path.expandvars(r"%LOCALAPPDATA%\Frickbears3/savedata2-13-25.wario"),"w")
+            file1 = open(os.path.expandvars(f"{path}/{savedata_name}"),"w")
             fuckitweball = saveData2[2].partition('_SaveRecent":true}')
             file1.write(saveData1[0]+newUpgradeData+saveData2[1]+fuckitweball[0]+'_SaveRecent":false}')
             file1.close()
